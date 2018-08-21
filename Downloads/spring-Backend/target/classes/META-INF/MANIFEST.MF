@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Built-By: leahnjoroge
+Build-Jdk: 10.0.1
+Implementation-Title: spring-back-end
+Implementation-Version: 0.1.0
+Implementation-Vendor-Id: com.claim
+Implementation-Vendor: Pivotal Software, Inc.
+Implementation-URL: http://projects.spring.io/spring-boot/spring-back-
+ end/
+Created-By: Maven Integration for Eclipse
+
