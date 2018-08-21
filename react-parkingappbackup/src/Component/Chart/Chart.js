@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import {Bar,Line,Pie} from 'react-chartjs-2';
-import axios from 'axios';
 import trucks from '../Trucks/Trucks';
 
 class Chart extends Component{
@@ -12,14 +10,6 @@ class Chart extends Component{
 
     }
 
-componentDidMount(){
-
-    axios.get('http://localhost:8080/findAllTrucks')
-    .then(res =>{
-        const trucks = res.data;
-        const size=trucks.length;
-        console.log("sizes",size)
-        this.setState({
             trucksize:size,
             chart:{labels:[4,5,6,7,7,8,8,9],
                 
@@ -48,13 +38,7 @@ componentDidMount(){
                     }
         })
     })
-    axios.get('http://localhost:8080/findAllSPots')
-    .then(res=>{
-        const spot = res.data;
-        const spots=spot.length;
-        console.log("spot",spots)
-        this.setState({
-            spotsize:spots,
+ 
         })
     })
 
