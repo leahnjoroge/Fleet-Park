@@ -60,9 +60,9 @@ import repository.UserRepository;
 @RestController 
 @CrossOrigin
 public class UserController {
-	public static final String ACCOUNT_SID="AC9cf90ed8609554d8b58737595f221c14";
-	public static final String AUTH_TOKEN="02b70de3da6513f1b197a7752dfb4802";
-	public static final String TWILIO_NUMBER="+16184000957";
+	public static final String ACCOUNT_SID="xxxxxxxxxxxxxxx";
+	public static final String AUTH_TOKEN="xxxxxxxxxxxx";
+	public static final String TWILIO_NUMBER="xxxxxxxxxx";
 	public static int fileNum=1;
 	@Autowired 
     UserRepository userRepository;
@@ -118,71 +118,11 @@ public class UserController {
 //	System.out.println("successfully created");
 //	}
 	//create barcodes
-	public int createbc() throws DocumentException, FileNotFoundException{
-		fileNum++;
-		int barcodeId = (int) (Math.random()*10000000);
-		Document d = new Document(new Rectangle(PageSize.A4));
-		PdfWriter p= PdfWriter.getInstance(d, new FileOutputStream ("/Users/leahnjoroge/Downloads/Demo"+fileNum+".pdf"));
-	     d.open();
-	     Barcode128 b= new Barcode128();
-	   b.setCode("" + barcodeId);
-	     d.add(b.createImageWithBarcode(p.getDirectContent(), null, null));
-	     d.close();
-	System.out.println("successfully created");
-
 	
-	return barcodeId;
 	}
 
-	@RequestMapping(value="/fileUpload", method=RequestMethod.POST)
-	public ModelAndView fileUpload(@RequestParam("file")MultipartFile file, Model model,HttpSession session ) throws IOException {
-		if (!file.getOriginalFilename().isEmpty()) {
-			BufferedOutputStream outputStream = null;
-			try {
-				outputStream = new BufferedOutputStream(
-						new FileOutputStream(
-								new File("/Users/leahnjoroge/Downloads/Demo.pdf",file.getOriginalFilename())));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-							try {
-								outputStream.write(file.getBytes());
-							} catch (IOException e1) {
-								
-								e1.printStackTrace();
-							}
-							try {
-								outputStream.flush();
-							} catch (IOException e) {
-								
-								e.printStackTrace();
-							}
-							try {
-								outputStream.close();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-							MyFiles myFile = new MyFiles(file.getOriginalFilename(), file.getContentType(), file.getBytes());
-							myFilesService.saveMyFile(myFile);
-							ArrayList<MyFiles>allsmFiles = myFilesService.getAllMyFiles();
-							session.setAttribute("allsmFiles", "allsmFiles");
-					session.setAttribute("msg", "File uploaded successfully.");
-					}else {
-						model.addAttribute("msg", "Please select a valid file..");
-				}
-	return new ModelAndView("capstoneproject");
 	
-	} 
-	@RequestMapping(value="/fileUpload",method=RequestMethod.GET)
-	public String fileUpload() {
-		return "fileUpload";
-		
-	}
-	@RequestMapping(value="/sheetMusic", method=RequestMethod.GET)
-	public String sheetMusic(HttpSession session) {
-		ArrayList<MyFiles> allsmFiles = myFilesService.getAllMyFiles();
-		session.setAttribute("allsmFiles", "allsmFiles");
-		return "capstoneproject";
+	
 	}
 	
 	@RequestMapping(value="/inventory", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -192,14 +132,6 @@ public class UserController {
 		return new ResponseEntity<>(trucks, HttpStatus.CREATED);
 		
 	}
-	@RequestMapping(value="/trucks",method=RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ArrayList<Trucks>> displayInventory(){
-		ArrayList<Trucks> trucks = (ArrayList<Trucks> ) displayRepository.findAll();
-		int number = trucks.size();
-		System.out.println(trucks);
-		System.out.println("The numbe is"+number);
-		return new ResponseEntity<>(trucks,HttpStatus.OK);
-		
 	
 	}
 //	@RequestMapping(value="/chart", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
@@ -279,28 +211,6 @@ public class UserController {
 // 	public ResponseEntity <Trucks> trucks (@RequestBody Trucks trucks){
 // 		TruckInRepository.save(trucks);
 // 		return new ResponseEntity<>(HttpStatus.CREATED);
-// 	}
- 	@RequestMapping(value="/Trucks", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity <Trucks> addTrucks(@RequestBody Trucks trucks ) throws FileNotFoundException, DocumentException{
-		//int barcodeId = (int) (Math.random()*10000000);
- 		
- 		//create barcode
-		trucks.setTruckNumber(createbc());
-		//saves truck in db
- 		truckInRepository.save(trucks);
- 		//send sms to driver and owner
- 		MyMessage sms=new MyMessage();
- 		sms.setSmsFrom(TWILIO_NUMBER);
- 		sms.setSmsTo("+13143221832");
- 		sms.setBody("Booking Confirmed \n Your Barcode number pin is:\n"+trucks.getTruckNumber());
- 		
- 		sendSms(sms);
- 		
-		return new ResponseEntity <>(HttpStatus.CREATED);
-	}
- 	@RequestMapping(value="/Barcode", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Barcode> displaybarcode(@RequestBody Barcode barcode){
-		return new ResponseEntity<>(HttpStatus.CREATED);
  		
  	}
  	//get all trucks 
@@ -316,26 +226,7 @@ public class UserController {
     	 return new ResponseEntity<>(trucks,HttpStatus.OK);
      }
      
-     @RequestMapping(value = "/sendsms", method = RequestMethod.POST)
- 	public ResponseEntity<List<MyMessage>> sendSms(@RequestBody MyMessage sms ) {
-    	 String link="/Users/leahnjoroge/Downloads/Demo"+fileNum+".pdf";
-    	 messageRepo.save(sms);
-     	
- 		Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-
- 	    Message message = Message.creator(new PhoneNumber(sms.getSmsTo()),
- 	        new PhoneNumber(sms.getSmsFrom()), 
- 	        sms.getBody())
-// 	    		.setMediaUrl(link)
- 	    		.create();
-
-     System.out.println(message.getSid());
-
- 		//userService.saveUser(user);
-     	
-     	return new ResponseEntity<>(HttpStatus.CREATED);
- 		
- 	}
+     
 //     @RequestMapping(value="/trucks",method=RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
 // 	public ResponseEntity<ArrayList<Trucks>> chartRepo(){
 // 		ArrayList<Trucks> trucks = (ArrayList<Trucks> ) chartRepo.findAll();
@@ -343,21 +234,6 @@ public class UserController {
 // 		System.out.println(leah);
 // 		return new ResponseEntity<>(trucks,HttpStatus.OK);
 //     }
-     //add to chart
-     @RequestMapping(value="/Chart",method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-     public ResponseEntity<Chart> saveChart(@RequestBody Chart chart){
-    	 ArrayList<Trucks> trucks =(ArrayList<Trucks>) truckInRepository.findAll();
-    	 ArrayList<ParkingSpot> spots = (ArrayList<ParkingSpot>) spotsRepository.findAll();
-    	 int truckNumber = (int)trucks.size();
-    	 int spotsNumber = ((int)spots.size());
-    	 chart.setNoTrucks(truckNumber);
-    	 chart.setNoSpots(spotsNumber);
-    	 System.out.println("Trucks: "+chart.getNoTrucks());
-    	 System.out.println("Spots"+chart.getNoSpots());
-    	 chartRepo.save(chart);
-    	 return new ResponseEntity<>(chart,HttpStatus.CREATED);
-     }
-     
 }
 
 
